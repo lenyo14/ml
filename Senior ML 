@@ -1,0 +1,162 @@
+# Senior Machine Learning Engineer
+
+## **1. System Design: ML Infrastructure for Fraud Detection in Insurance**
+
+### **Question:**  
+You need to design an end-to-end ML system for detecting fraudulent insurance claims. The system should process both real-time claims and historical data for batch fraud detection. How would you architect the solution?  
+
+### **Follow-up Questions:**  
+- How do you handle **model versioning** and **rollback** in fraud detection?  
+- What challenges arise in dealing with **imbalanced data** in fraud detection?  
+- How would you ensure the system is **explainable** and **auditable** for regulatory compliance?  
+
+### **Ideal Answer:**  
+- **Data Pipeline:**  
+  - **Real-time claims processing** using **Kafka** for event streaming.  
+  - **Batch processing** using **Spark or Airflow** for training models on historical claim data.  
+- **Feature Engineering:**  
+  - Behavioral features: Frequency of claims, unusual claim amounts.  
+  - Graph-based features: Linking claimants to past fraudulent networks.  
+- **Modeling Strategy:**  
+  - Train **XGBoost, LightGBM, or deep learning models** for fraud classification.  
+  - Handle class imbalance using **SMOTE, cost-sensitive learning, or anomaly detection**.  
+- **Deployment & Monitoring:**  
+  - Deploy model via **FastAPI/gRPC** and use **Redis or Memcached** for caching decisions.  
+  - **Log fraud scores & false positives into an ELK Stack (Elasticsearch, Logstash, Kibana)** for real-time dashboards.  
+- **Model Versioning & Compliance:**  
+  - Use **MLflow or DVC** for tracking experiments and version control.  
+  - Ensure **explainability** with SHAP/LIME and store logs in **Elasticsearch for audits**.  
+
+### **Evaluation Criteria:**  
+✅ **Hire If:**  
+- Clearly outlines **real-time & batch ML pipeline**.  
+- Can handle **data imbalance, regulatory challenges**.  
+- Suggests **alternative monitoring solutions** (e.g., ELK, Redis, Kafka logging).  
+
+❌ **No Hire If:**  
+- Cannot design a clear fraud detection pipeline.  
+- Does not address **model drift, class imbalance, or explainability**.  
+
+---
+
+## **2. Practical ML Coding: Implement KNN from Scratch**
+
+### **Question:**  
+Write a Python function to implement **K-Nearest Neighbors (KNN)** from scratch using **NumPy**.  
+
+### **Follow-up Questions:**  
+- What is the time and space complexity of your implementation?  
+- How would you optimize it for large-scale datasets?  
+- How does KNN perform with **high-dimensional data**?  
+
+### **Ideal Answer (Code Implementation):**  
+```python
+import numpy as np
+from collections import Counter
+
+class KNN:
+    def __init__(self, k=3):
+        self.k = k
+
+    def fit(self, X_train, y_train):
+        self.X_train = X_train
+        self.y_train = y_train
+
+    def predict(self, X_test):
+        y_pred = [self._predict(x) for x in X_test]
+        return np.array(y_pred)
+
+    def _predict(self, x):
+        distances = [np.linalg.norm(x - x_train) for x_train in self.X_train]
+        k_indices = np.argsort(distances)[:self.k]
+        k_nearest_labels = [self.y_train[i] for i in k_indices]
+        most_common = Counter(k_nearest_labels).most_common(1)
+        return most_common[0][0]
+```
+
+### **Evaluation Criteria:**  
+✅ **Hire If:**  
+- Implements **KNN correctly** without scikit-learn.  
+- Knows **optimizations (KD-Trees, Annoy, Faiss, LSH)**.  
+
+❌ **No Hire If:**  
+- Cannot implement KNN or does so incorrectly.  
+- No knowledge of **efficiency improvements**.  
+
+---
+
+## **3. ML Theory: Bias-Variance Tradeoff & Regularization**
+
+### **Question:**  
+Explain the **bias-variance tradeoff** and how it applies to ML models.  
+What techniques help mitigate high variance or high bias?  
+
+### **Follow-up Questions:**  
+- How would you detect high variance vs. high bias in a fraud detection model?  
+- When would you use **L1 vs. L2 regularization**?  
+
+### **Ideal Answer:**  
+- **Bias:** High bias = underfitting, poor train/test performance.  
+- **Variance:** High variance = overfitting, good train but poor test performance.  
+- **Diagnostics:**  
+  - **High Bias:** Low training and test accuracy → Model too simple.  
+  - **High Variance:** High training but low test accuracy → Overfitting.  
+- **Regularization:**  
+  - **L1 (Lasso):** Encourages sparsity, useful for feature selection.  
+  - **L2 (Ridge):** Penalizes large weights, helps with multicollinearity.  
+
+### **Evaluation Criteria:**  
+✅ **Hire If:**  
+- Explains **bias-variance tradeoff** with real-world ML examples.  
+- Knows **L1 vs. L2 regularization differences**.  
+
+❌ **No Hire If:**  
+- Cannot diagnose bias vs. variance in models.  
+- Confused about **L1 vs. L2 penalties**.  
+
+---
+
+## **4. ML Infrastructure & Deployment: Kubernetes & Model Serving**
+
+### **Question:**  
+How would you deploy a **fraud detection model** using **Kubernetes**?  
+
+### **Follow-up Questions:**  
+- What Kubernetes components would you use?  
+- How would you monitor performance in real-time **without Prometheus & Grafana**?  
+- What trade-offs exist between **REST API** and **gRPC** for ML inference?  
+
+### **Ideal Answer:**  
+- **Monitoring Without Prometheus & Grafana:**  
+  - **Use Fluentd or OpenTelemetry** for structured logs.  
+  - Store logs in **Elasticsearch (ELK stack) or Loki** and visualize in **Kibana**.  
+  - Alert on fraud spikes using **Kafka Streams + Redis pub/sub for real-time notifications**.  
+
+### **Evaluation Criteria:**  
+✅ **Hire If:**  
+- Knows **Kubernetes scaling, monitoring (without Prometheus/Grafana)**.  
+- Can reason about **REST API vs. gRPC trade-offs**.  
+
+❌ **No Hire If:**  
+- No experience with **model deployment on Kubernetes**.  
+- Does not suggest **alternative monitoring methods**.  
+
+---
+
+## **5. Large-Scale ML: Feature Stores**
+
+### **Question:**  
+How would you design a **feature store** for fraud detection?  
+
+### **Ideal Answer:**  
+- **Batch Features:** Aggregated historical fraud rates, claim history.  
+- **Real-Time Features:** Time since last claim, transaction velocity.  
+- **Challenges:** Feature drift, latency, missing data handling.  
+
+✅ **Hire If:**  
+- Understands **feature store purpose**.  
+- Can handle **real-time & batch feature consistency**.  
+
+❌ **No Hire If:**  
+- No knowledge of feature stores or consistency challenges.  
+
